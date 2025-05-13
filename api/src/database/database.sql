@@ -1,0 +1,6 @@
+-- # PostgreSQL config
+-- DB_PORT=5432
+-- DB_HOST='localhost'
+-- DB_USERNAME='ali'
+-- DB_PASSWORD='root'
+-- DB_DATABASE='aishastore'
