@@ -1,6 +1,7 @@
 const express = require('express')
 const cors = require('cors')
 const appRouter = require('./src/route/route.js')
+const { PORT } = require('./src/config/config.js')
 
 // Setup application.
 const app = express()
@@ -13,4 +14,4 @@ appRouter(app)
 require('./src/database/postgres.js')
 
 // Setup listening port.
-app.listen(3000, () => console.log('Listening on port ' + 3000))
+app.listen(PORT, () => console.log(`Listening on port ${PORT}`))

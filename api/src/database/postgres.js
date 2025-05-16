@@ -1,11 +1,12 @@
 const postgres = require('pg')
+const { DB_PORT, DB_HOST, DB_USERNAME, DB_PASS, DB_DATABASE } = require('../config/config')
 
 const pg = new postgres.Client({
-    port: 5432,
-    host: 'localhost',
-    username: 'ali',
-    password: 'root',
-    database: 'aishastore'
+    port: DB_PORT,
+    host: DB_HOST,
+    username: DB_USERNAME,
+    password: DB_PASS,
+    database: DB_DATABASE
 })
 
 pg.connect((err) => {
