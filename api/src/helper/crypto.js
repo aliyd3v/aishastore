@@ -12,11 +12,15 @@ const cryptoManager = {
             return encrypted + ':' + iv
         },
         verify: token => {
-            const [encrtypted, iv] = token.split(':')
-            const decipher = crypto.createDecipheriv(ALGORITHM, CRYPTO_KEY, iv)
-            let decrypt = decipher.update(encrtypted, 'hex', 'utf-8')
-            decrypt += decipher.final('utf-8')
-            return Object.fromEntries(new URLSearchParams(decrypt))
+            try {
+                const [encrtypted, iv] = token.split(':')
+                const decipher = crypto.createDecipheriv(ALGORITHM, CRYPTO_KEY, iv)
+                let decrypt = decipher.update(encrtypted, 'hex', 'utf-8')
+                decrypt += decipher.final('utf-8')
+                return Object.fromEntries(new URLSearchParams(decrypt))
+            } catch (error) {
+                return undefined
+            }
         }
     },
     pass: {
