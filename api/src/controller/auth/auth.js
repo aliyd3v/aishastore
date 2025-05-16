@@ -40,7 +40,6 @@ const authController = {
             const token = cryptoManager.token.generate({
                 userId: user.rows[0].id,
                 role: user.rows[0].role,
-                userId: user.rows[0].id,
                 createdTime: new Date().getTime(),
                 tokenTime: TOKEN_TIME
             })
