@@ -4,6 +4,7 @@ const AppError = require('../../util/appError.js')
 const userCreateValidate = require("../../util/validate/user/createValidate.js")
 const userPasswordUpdateValidate = require('../../util/validate/user/updatePasswordValidate.js')
 const userUpdateValidate = require("../../util/validate/user/updateValidate.js")
+const userDB = require('../database/user.js')
 
 const User = {
     create: async (req, res, next) => {
@@ -34,10 +35,7 @@ const User = {
                 )
             }
             value.repeat_password = undefined
-            const condidat = await pg.query(
-                `SELECT id FROM users WHERE username = $1;`,
-                [value.username]
-            )
+            const condidat = await userDB.getOneByUsername(value.username)
             if (condidat.rowCount) {
                 return next(
                     new AppError(400, 'fail', `'${value.username}' usename bilan allaqachon foydalanuvchi mavjud! Iltimos boshqa usernamedan foydalaning.`),
@@ -48,12 +46,7 @@ const User = {
             }
             const passwordHash = await cryptoManager.pass.hash(value.password)
             value.password = undefined
-            const newUser = await pg.query(
-                `INSERT INTO users (name, username, password, role)
-                VALUES ($1, $2, $3, $4)
-                RETURNING id, name, username, role, createdAt;`,
-                [value.name, value.username, passwordHash, value.role]
-            )
+            const newUser = await userDB.createOne(value.name, value.username, passwordHash, value.role)
             res.status(200).json({
                 status: 'success',
                 data: {
@@ -67,10 +60,7 @@ const User = {
     },
     getAll: async (req, res, next) => {
         try {
-            const users = await pg.query(
-                `SELECT id, name, username, role, createdAt, updatedAt
-                FROM users ORDER BY username;`
-            )
+            const users = await userDB.getAll()
             res.status(200).json({
                 status: 'success',
                 data: {
@@ -92,11 +82,7 @@ const User = {
                     next
                 )
             }
-            const user = await pg.query(
-                `SELECT id, name, username, role, createdAt, updatedAt
-                FROM users WHERE id = $1;`,
-                [req.params.id]
-            )
+            const user = await userDB.getOneById(req.params.id)
             if (!user.rowCount) {
                 return next(
                     new AppError(404, 'fail', 'Bunday id bilan foydalanuvchi topilmadi!'),
@@ -142,11 +128,7 @@ const User = {
                     next
                 )
             }
-            const user = await pg.query(
-                `SELECT id, name, username, role, createdAt, updatedAt
-                FROM users WHERE id = $1;`,
-                [req.params.id]
-            )
+            const user = await userDB.getOneById(req.params.id)
             if (!user.rowCount) {
                 return next(
                     new AppError(404, 'fail', 'Bunday id bilan foydalanuvchi topilmadi!'),
@@ -156,10 +138,7 @@ const User = {
                 )
             }
             if (user.rows[0].username !== value.username) {
-                const condidat = await pg.query(
-                    `SELECT id, username FROM users WHERE username = $1;`,
-                    [value.username]
-                )
+                const condidat = await userDB.getOneByUsername(value.username)
                 if (condidat.rowCount) {
                     return next(
                         new AppError(404, 'fail', `'${value.username}' username bilan allaqachon foydalanuvchi mavjud!`),
@@ -169,10 +148,13 @@ const User = {
                     )
                 }
             }
-            const updatedUser = await pg.query(
-                `UPDATE users SET name = $1, username = $2, role = $3, phone = $4, email = $5, updatedAt = CURRENT_TIMESTAMP
-                WHERE id = $6 RETURNING id, name, username, role, phone, email, createdAt, updatedAt;`,
-                [value.name, value.username, value.role, value.phone ? value.phone : null, value.email ? value.email : null, req.params.id]
+            const updatedUser = await userDB.updateOne(
+                value.name,
+                value.username,
+                value.role,
+                value.phone ? value.phone : null,
+                value.email ? value.email : null,
+                req.params.id
             )
             res.status(200).json({
                 status: 'success',
@@ -222,11 +204,7 @@ const User = {
                 )
             }
             value.repeat_password = undefined
-            const user = await pg.query(
-                `SELECT id, name, username, role, createdAt, updatedAt
-                FROM users WHERE id = $1;`,
-                [req.params.id]
-            )
+            const user = await userDB.getOneById(req.params.id)
             if (!user.rowCount) {
                 return next(
                     new AppError(404, 'fail', 'Bunday id bilan foydalanuvchi topilmadi!'),
@@ -245,10 +223,7 @@ const User = {
             }
             const passwordHash = await cryptoManager.pass.hash(value.password)
             value.password = undefined
-            await pg.query(
-                `UPDATE users SET password = $1 WHERE id = $2;`,
-                [passwordHash, req.params.id]
-            )
+            await userDB.updatePass(passwordHash, req.params.id)
             res.status(200).json({
                 status: 'success',
                 data: null,
@@ -268,11 +243,7 @@ const User = {
                     next
                 )
             }
-            const user = await pg.query(
-                `SELECT id, name, username, role, createdAt, updatedAt
-                FROM users WHERE id = $1;`,
-                [req.params.id]
-            )
+            const user = await userDB.getOneById(req.params.id)
             if (!user.rowCount) {
                 return next(
                     new AppError(404, 'fail', 'Bunday id bilan foydalanuvchi topilmadi!'),
@@ -289,10 +260,7 @@ const User = {
                     next
                 )
             }
-            await pg.query(
-                `DELETE FROM users WHERE id = $1;`,
-                [req.params.id]
-            )
+            await userDB.deleteOne(req.params.id)
             res.status(200).json({
                 status: 'success',
                 data: null,
@@ -321,7 +289,7 @@ const User = {
                     next
                 )
             }
-            await pg.query(`DELETE FROM users WHERE id = $1;`, [req.user.id])
+            await userDB.deleteOne(req.user.id)
             res.status(200).json({
                 status: 'success',
                 data: null,

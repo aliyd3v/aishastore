@@ -3,6 +3,7 @@ const authentificationValidate = require('../../util/validate/auth/authentificat
 const pg = require('../../database/postgres.js')
 const cryptoManager = require('../../helper/crypto.js')
 const { TOKEN_TIME } = require('../../config/config.js')
+const userDB = require('../database/user.js')
 
 const authController = {
     authentication: async (req, res, next) => {
@@ -16,10 +17,7 @@ const authController = {
                     next
                 )
             }
-            const user = await pg.query(
-                `SELECT id, name, username, password, role, createdAt, updatedAt FROM users WHERE username = $1;`,
-                [value.username]
-            )
+            const user = await userDB.getOneWithPassByUsername(value.username)
             if (!user.rowCount) {
                 return next(
                     new AppError(404, 'fail', `${value.username} username bilan foydalanuvchi topilmadi!`),
@@ -100,10 +98,7 @@ const authController = {
                 )
             }
             if (decoded.userId) {
-                const user = await pg.query(
-                    `SELECT id, name, username, role, createdAt, updatedAt FROM users WHERE id = $1;`,
-                    [decoded.userId]
-                )
+                const user = await userDB.getOneById(decoded.userId)
                 if (!user.rowCount) {
                     return next(
                         new AppError(403, 'fail', 'Forbidden Error!'),
@@ -146,7 +141,7 @@ const authController = {
     registration: (req, res) => {
         const { body } = req
         try {
-            
+
             // Registration code.
 
             res.status(201).json({
