@@ -9,7 +9,7 @@ const user = {
             [name, username, password, role]
         )
     },
-    getOneById: async (id) => {
+    getOneById: async id => {
         return await pg.query(
             `SELECT id, name, username, role, createdAt, updatedAt FROM users WHERE id = $1;`,
             [id]

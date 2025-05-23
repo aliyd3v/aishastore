@@ -63,7 +63,7 @@ const Category = {
         try {
             if (isNaN(Number(req.params.id))) {
                 return next(
-                    new AppError(400, 'fail', 'Id noto\'g\'ri formatda!'),
+                    new AppError(400, 'fail', 'ID noto\'g\'ri formatda!'),
                     req,
                     res,
                     next
@@ -72,7 +72,7 @@ const Category = {
             const category = await categoryDB.getOneById(req.params.id)
             if (!category.rowCount) {
                 return next(
-                    new AppError(404, 'fail', 'Bunday id bilan kategoriya topilmadi!')
+                    new AppError(404, 'fail', 'Bunday ID bilan kategoriya topilmadi!')
                 )
             }
             res.status(200).json({
@@ -102,7 +102,7 @@ const Category = {
         try {
             if (isNaN(Number(req.params.id))) {
                 return next(
-                    new AppError(400, 'fail', 'Id formati noto\'g\'ri!'),
+                    new AppError(400, 'fail', 'ID formati noto\'g\'ri!'),
                     req,
                     res,
                     next
@@ -128,7 +128,7 @@ const Category = {
             const category = await categoryDB.getOneById(req.params.id)
             if (!category.rowCount) {
                 return next(
-                    new AppError(404, 'fail', 'Bunday id bilan kategoriya topilmadi!'),
+                    new AppError(404, 'fail', 'Bunday ID bilan kategoriya topilmadi!'),
                     req,
                     res,
                     next
@@ -162,7 +162,7 @@ const Category = {
 
             if (isNaN(Number(req.params.id))) {
                 return next(
-                    new AppError(400, 'fail', 'Id formati noto\'g\'ri!'),
+                    new AppError(400, 'fail', 'ID formati noto\'g\'ri!'),
                     req,
                     res,
                     next
@@ -171,7 +171,7 @@ const Category = {
             const category = await categoryDB.getOneById(req.params.id)
             if (!category.rowCount) {
                 return next(
-                    new AppError(404, 'fail', 'Bunday id bilan kategoriya topilmadi!'),
+                    new AppError(404, 'fail', 'Bunday ID bilan kategoriya topilmadi!'),
                     req,
                     res,
                     next
