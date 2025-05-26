@@ -85,19 +85,6 @@ const Category = {
             next(error)
         }
     },
-    getAllWithProducts: async (req, res, next) => {
-        try {
-
-            // Write here.
-
-            res.status(200).json({
-                status: 'success',
-                data: null
-            })
-        } catch (error) {
-            next(error)
-        }
-    },
     updateOne: async (req, res, next) => {
         try {
             if (isNaN(Number(req.params.id))) {
