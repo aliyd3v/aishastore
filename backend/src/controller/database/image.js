@@ -1,18 +1,24 @@
 const pg = require('../../database/postgres.js')
 
 const image = {
-    createProductItemImage: async (fileName, url, productItemId) => {
+    createProductItemImage: async (fileName, publicUrl, productItemId) => {
         return await pg.query(
-            `INSERT INTO images (name, url, productItemId)
+            `INSERT INTO images (fileName, publicUrl, productItemId)
             VALUES ($1, $2, $3)
-            RETURNING id, name, url, productItemId, createdAt;`,
-            [fileName, url, productItemId]
+            RETURNING id, fileName, publicUrl, productItemId, createdAt;`,
+            [fileName, publicUrl, productItemId]
+        )
+    },
+    getOneById: async id => {
+        return pg.query(
+            `SELECT id, fileName, publicUrl, productItemId, createdAt FROM images WHERE id = $1;`,
+            [id]
         )
     },
     deleteProductItemImage: async id => {
-        return await pg.query(
-            ``,
-            []
+        await pg.query(
+            `DELETE FROM images WHERE id = $1;`,
+            [id]
         )
     }
 }
